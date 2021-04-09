@@ -41,36 +41,6 @@ pub enum ShaderError {
     ErrorInitializingShadercCompileOptions,
 }
 
-#[cfg(all(
-    not(target_os = "ios"),
-    not(target_arch = "wasm32"),
-    not(all(target_arch = "aarch64", target_os = "macos"))
-))]
-impl From<ShaderStage> for bevy_glsl_to_spirv::ShaderType {
-    fn from(s: ShaderStage) -> bevy_glsl_to_spirv::ShaderType {
-        match s {
-            ShaderStage::Vertex => bevy_glsl_to_spirv::ShaderType::Vertex,
-            ShaderStage::Fragment => bevy_glsl_to_spirv::ShaderType::Fragment,
-            ShaderStage::Compute => bevy_glsl_to_spirv::ShaderType::Compute,
-        }
-    }
-}
-
-#[cfg(all(
-    not(target_os = "ios"),
-    not(target_arch = "wasm32"),
-    not(all(target_arch = "aarch64", target_os = "macos"))
-))]
-pub fn glsl_to_spirv(
-    glsl_source: &str,
-    stage: ShaderStage,
-    shader_defs: Option<&[String]>,
-) -> Result<Vec<u32>, ShaderError> {
-    bevy_glsl_to_spirv::compile(glsl_source, stage.into(), shader_defs)
-        .map_err(ShaderError::Compilation)
-}
-
-#[cfg(any(target_os = "ios", all(target_arch = "aarch64", target_os = "macos")))]
 impl Into<shaderc::ShaderKind> for ShaderStage {
     fn into(self) -> shaderc::ShaderKind {
         match self {
